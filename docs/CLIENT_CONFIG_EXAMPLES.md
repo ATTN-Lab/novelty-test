@@ -37,3 +37,14 @@
 ```
 
 Adjust to your actual client config format if field names differ.
+
+## Streamable HTTP endpoint (if client supports URL-based MCP)
+Start server with:
+```bash
+./run_http.sh
+```
+
+Endpoint:
+```text
+http://localhost:8000/mcp
+```

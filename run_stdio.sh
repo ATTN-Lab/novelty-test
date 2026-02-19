@@ -21,7 +21,7 @@ fi
 # Ensure runtime dependencies exist in the chosen interpreter.
 if ! "${PYTHON}" - <<'PY' >/dev/null 2>&1
 import importlib
-for name in ("mcp.server.fastmcp", "jsonschema", "selenium"):
+for name in ("mcp.server.fastmcp", "jsonschema", "selenium", "uvicorn"):
     importlib.import_module(name)
 PY
 then

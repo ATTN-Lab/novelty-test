@@ -1,0 +1,9 @@
+.git
+.gitignore
+.venv
+__pycache__
+*.py[cod]
+*.egg-info
+runtime/*.json
+runtime/*.tmp
+runtime/*.log

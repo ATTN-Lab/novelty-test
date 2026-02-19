@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import uuid
+import os
 from pathlib import Path
 from typing import Any, Dict
 
@@ -60,11 +61,16 @@ class PatentNoveltyRuntime:
         return json.loads((self.schemas_dir / name).read_text(encoding="utf-8"))
 
 
-def build_server(root_dir: Path | None = None) -> FastMCP:
+def build_server(root_dir: Path | None = None, host: str = "127.0.0.1", port: int = 8000) -> FastMCP:
     root = (root_dir or Path(__file__).resolve().parents[2]).resolve()
     runtime = PatentNoveltyRuntime(root)
 
-    server = FastMCP(name="patent-novelty-mcp", instructions="Cross-provider patent novelty MCP server")
+    server = FastMCP(
+        name="patent-novelty-mcp",
+        instructions="Cross-provider patent novelty MCP server",
+        host=host,
+        port=port,
+    )
 
     @server.tool(name="novelty.providers.list", description="List configured novelty providers and capabilities")
     def novelty_providers_list() -> Dict[str, Any]:
@@ -171,8 +177,19 @@ def build_server(root_dir: Path | None = None) -> FastMCP:
 
 
 def main() -> None:
-    server = build_server()
-    server.run(transport="stdio")
+    transport = os.environ.get("MCP_TRANSPORT", "stdio").strip().lower() or "stdio"
+    host = os.environ.get("MCP_HOST", "127.0.0.1").strip() or "127.0.0.1"
+    try:
+        port = int(os.environ.get("MCP_PORT", "8000"))
+    except ValueError:
+        raise ValueError("MCP_PORT must be an integer")
+
+    server = build_server(host=host, port=port)
+    if transport == "sse":
+        mount_path = os.environ.get("MCP_MOUNT_PATH", "/").strip() or "/"
+        server.run(transport=transport, mount_path=mount_path)
+        return
+    server.run(transport=transport)
 
 
 if __name__ == "__main__":

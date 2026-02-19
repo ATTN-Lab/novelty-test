@@ -36,6 +36,31 @@ Notes:
 - Override interpreter if needed: `PYTHON_BIN=/path/to/python ./run_stdio.sh`
 - First startup can take longer due to dependency installation.
 
+## HTTP Mode
+Run as a local HTTP MCP server (default `0.0.0.0:8000`):
+```bash
+cd novelty-test
+export WIPO_USERNAME='...'
+export WIPO_PASSWORD='...'
+./run_http.sh
+```
+
+Optional overrides:
+- `MCP_HOST` (default `0.0.0.0` in `run_http.sh`)
+- `MCP_PORT` (default `8000`)
+- `MCP_TRANSPORT` (`stdio`, `sse`, or `streamable-http`)
+
+## Docker
+```bash
+cd novelty-test
+docker build -t patent-novelty-mcp .
+docker run --rm -p 8000:8000 \
+  -e WIPO_USERNAME='...' \
+  -e WIPO_PASSWORD='...' \
+  patent-novelty-mcp
+```
+This starts Streamable HTTP MCP on `http://localhost:8000/mcp`.
+
 ## SSH Client Config Pattern
 Use your MCP client config to launch:
 - command: `/absolute/path/to/novelty-test/run_stdio.sh`
