@@ -1,0 +1,23 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "common response envelope",
+  "type": "object",
+  "required": ["request_id", "ok"],
+  "additionalProperties": true,
+  "properties": {
+    "request_id": {"type": "string"},
+    "ok": {"type": "boolean"},
+    "data": {},
+    "error": {
+      "type": ["object", "null"],
+      "properties": {
+        "code": {"type": "string"},
+        "message": {"type": "string"},
+        "provider": {"type": ["string", "null"]},
+        "retryable": {"type": "boolean"},
+        "details": {"type": "object"}
+      },
+      "required": ["code", "message", "retryable"]
+    }
+  }
+}

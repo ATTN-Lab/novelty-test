@@ -1,0 +1,38 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "novelty.batch_csv request",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["csv_paths", "providers"],
+  "properties": {
+    "csv_paths": {
+      "type": "array",
+      "minItems": 1,
+      "items": {"type": "string", "minLength": 1}
+    },
+    "query_column_candidates": {
+      "type": "array",
+      "items": {"type": "string"},
+      "default": ["SMILES", "smiles", "Scaffold", "canonical_smiles", "ligand_smiles", "INN", "inn", "compound_name", "name"]
+    },
+    "result_column": {"type": "string", "default": "Result"},
+    "providers": {
+      "type": "array",
+      "minItems": 1,
+      "items": {"type": "string", "enum": ["wipo_patentscope", "google_patents", "epo_espacenet"]}
+    },
+    "query_type": {"type": "string", "enum": ["smiles", "inchi", "inn", "compound_name"], "default": "smiles"},
+    "provider_options": {
+      "type": "object",
+      "additionalProperties": true
+    },
+    "aggregation_policy": {
+      "type": "string",
+      "enum": ["any_hit_is_not_novel", "majority_vote", "provider_priority"],
+      "default": "any_hit_is_not_novel"
+    },
+    "write_mode": {"type": "string", "enum": ["atomic_overwrite"], "default": "atomic_overwrite"},
+    "resume": {"type": "boolean", "default": true},
+    "max_new_queries": {"type": "integer", "minimum": 0, "default": 0}
+  }
+}

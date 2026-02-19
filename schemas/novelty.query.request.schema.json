@@ -1,0 +1,27 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "novelty.query request",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["query", "query_type", "providers"],
+  "properties": {
+    "query": {"type": "string", "minLength": 1},
+    "query_type": {"type": "string", "enum": ["smiles", "inchi", "inn", "compound_name"]},
+    "providers": {
+      "type": "array",
+      "minItems": 1,
+      "items": {"type": "string", "enum": ["wipo_patentscope", "google_patents", "epo_espacenet"]}
+    },
+    "options": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "scaffold_mode": {"type": "boolean"},
+        "include_markush_enumeration": {"type": "boolean"},
+        "timeout_seconds": {"type": "integer", "minimum": 5, "maximum": 180},
+        "use_cache": {"type": "boolean"},
+        "force_refresh": {"type": "boolean"}
+      }
+    }
+  }
+}
