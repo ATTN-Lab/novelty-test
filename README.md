@@ -1,6 +1,6 @@
-# patent-novelty-mcp (Blueprint)
+# patent-novelty-mcp
 
-This folder contains a pre-implementation blueprint for a cross-provider novelty MCP server.
+Cross-provider novelty MCP server with a live WIPO provider and an extensible provider interface.
 
 ## Contents
 - `docs/IMPLEMENTATION_BLUEPRINT.md` : phased plan
@@ -8,33 +8,37 @@ This folder contains a pre-implementation blueprint for a cross-provider novelty
 - `src/patent_novelty_mcp/*` : module skeletons
 
 ## Current Status
-- Contracts drafted
-- Skeleton modules created
 - MCP stdio transport wired with FastMCP
 - Tool registration implemented for:
   - `novelty.providers.list`
   - `novelty.query`
-  - `novelty.batch_csv` (stub)
+  - `novelty.batch_csv`
   - `novelty.cache.get`
   - `novelty.cache.put` (stub)
   - `novelty.job.status` (stub)
   - `novelty.job.cancel` (stub)
-- WIPO provider remains a stub until live client hookup
-  - (Update) WIPO provider is now live for `novelty.query` / `novelty.batch_csv`
+- WIPO provider is live for `novelty.query` / `novelty.batch_csv`
 
-## Run (stdio)
+## Quick Start (Universal)
 ```bash
-cd /Users/tim/Desktop/ADHD/mcp/patent_novelty
+git clone git@github.com:ATTN-Lab/novelty-test.git
+cd novelty-test
+
+# Required for live WIPO calls:
+export WIPO_USERNAME='...'
+export WIPO_PASSWORD='...'
+
+# run_stdio.sh now auto-creates .venv and installs dependencies as needed
 ./run_stdio.sh
 ```
 
-Optional env vars for live WIPO calls once provider is implemented:
-- `WIPO_USERNAME`
-- `WIPO_PASSWORD`
+Notes:
+- Override interpreter if needed: `PYTHON_BIN=/path/to/python ./run_stdio.sh`
+- First startup can take longer due to dependency installation.
 
 ## SSH Client Config Pattern
 Use your MCP client config to launch:
-- command: `/Users/tim/Desktop/ADHD/mcp/patent_novelty/run_stdio.sh`
+- command: `/absolute/path/to/novelty-test/run_stdio.sh`
 
 This pattern is portable for Codex and Claude clients that support MCP stdio servers.
 

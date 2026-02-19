@@ -2,7 +2,7 @@
 
 ## Generic stdio server command
 ```bash
-/Users/tim/Desktop/ADHD/mcp/patent_novelty/run_stdio.sh
+/absolute/path/to/novelty-test/run_stdio.sh
 ```
 
 ## Codex-style MCP config (example)
@@ -10,7 +10,7 @@
 {
   "mcpServers": {
     "patent-novelty": {
-      "command": "/Users/tim/Desktop/ADHD/mcp/patent_novelty/run_stdio.sh",
+      "command": "/absolute/path/to/novelty-test/run_stdio.sh",
       "env": {
         "WIPO_USERNAME": "${WIPO_USERNAME}",
         "WIPO_PASSWORD": "${WIPO_PASSWORD}"
@@ -25,7 +25,7 @@
 {
   "mcpServers": {
     "patent-novelty": {
-      "command": "/Users/tim/Desktop/ADHD/mcp/patent_novelty/run_stdio.sh",
+      "command": "/absolute/path/to/novelty-test/run_stdio.sh",
       "args": [],
       "env": {
         "WIPO_USERNAME": "${WIPO_USERNAME}",
