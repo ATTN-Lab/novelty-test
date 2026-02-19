@@ -1,0 +1,13 @@
+{
+  "mcpServers": {
+    "patent-novelty": {
+      "command": "/absolute/path/to/novelty-test/run_stdio.sh",
+      "args": [],
+      "env": {
+        "WIPO_USERNAME": "${WIPO_USERNAME}",
+        "WIPO_PASSWORD": "${WIPO_PASSWORD}",
+        "PYTHON_BIN": "/absolute/path/to/python3.11"
+      }
+    }
+  }
+}

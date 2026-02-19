@@ -1,0 +1,11 @@
+{
+  "mcpServers": {
+    "patent-novelty-http": {
+      "url": "http://localhost:8010/mcp",
+      "env": {
+        "WIPO_USERNAME": "${WIPO_USERNAME}",
+        "WIPO_PASSWORD": "${WIPO_PASSWORD}"
+      }
+    }
+  }
+}

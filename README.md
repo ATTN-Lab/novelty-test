@@ -66,6 +66,9 @@ Use your MCP client config to launch:
 - command: `/absolute/path/to/novelty-test/run_stdio.sh`
 
 This pattern is portable for Codex and Claude clients that support MCP stdio servers.
+Detailed setup and templates:
+- `docs/CLIENT_SETUP.md`
+- `docs/client-config/*.json`
 
 ## Start Here
 1. Implement async job manager tools (`novelty.job.status`, `novelty.job.cancel`)

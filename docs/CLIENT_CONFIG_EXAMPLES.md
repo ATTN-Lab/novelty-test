@@ -1,5 +1,7 @@
 # MCP Client Config Examples
 
+See also: `docs/CLIENT_SETUP.md` for complete end-to-end setup.
+
 ## Generic stdio server command
 ```bash
 /absolute/path/to/novelty-test/run_stdio.sh
@@ -48,3 +50,8 @@ Endpoint:
 ```text
 http://localhost:8000/mcp
 ```
+
+## Ready-to-copy templates
+- `docs/client-config/claude_desktop.stdio.json`
+- `docs/client-config/codex.stdio.json`
+- `docs/client-config/http.url.json`
