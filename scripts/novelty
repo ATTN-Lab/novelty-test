@@ -86,7 +86,7 @@ case "$cmd" in
     fi
     sid="$(init_session "$url")"
     query_json="$(json_escape "$query")"
-    args_json="{\"payload\":{\"query\":$query_json,\"query_type\":\"$qtype\",\"providers\":[\"wipo_patentscope\"],\"provider_options\":{\"wipo_patentscope\":{\"scaffold_mode\":false,\"include_markush_enumeration\":false}}}}"
+    args_json="{\"payload\":{\"query\":$query_json,\"query_type\":\"$qtype\",\"providers\":[\"wipo_patentscope\"],\"options\":{\"scaffold_mode\":false,\"include_markush_enumeration\":false}}}"
     call_tool "$url" "$sid" "novelty.query" "$args_json"
     ;;
   *)
