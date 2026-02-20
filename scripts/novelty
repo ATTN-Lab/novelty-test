@@ -11,12 +11,14 @@ Usage:
   scripts/novelty http [port]
   scripts/novelty smoke [url]
   scripts/novelty query <query_type> <query> [url]
+  scripts/novelty batch <csv_path_or_dir> [query_type] [max_new_queries] [url]
 
 Examples:
   scripts/novelty mcp
   scripts/novelty http 8010
   scripts/novelty smoke
   scripts/novelty query compound_name ibuprofen
+  scripts/novelty batch /path/to/csvs smiles 20
 USAGE
 }
 
@@ -62,6 +64,68 @@ call_tool() {
     -d "{\"jsonrpc\":\"2.0\",\"id\":\"2\",\"method\":\"tools/call\",\"params\":{\"name\":\"$tool_name\",\"arguments\":$args_json}}"
 }
 
+call_batch_tool() {
+  local url="$1"
+  local sid="$2"
+  local csv_target="$3"
+  local query_type="$4"
+  local max_new_queries="$5"
+
+  local payload_file
+  payload_file="$(mktemp)"
+
+  python3 - <<'PY' "$csv_target" "$query_type" "$max_new_queries" > "$payload_file"
+import json
+import pathlib
+import sys
+
+target = pathlib.Path(sys.argv[1]).expanduser()
+query_type = sys.argv[2]
+max_new_queries = int(sys.argv[3])
+
+if target.is_dir():
+    paths = sorted(str(p.resolve()) for p in target.glob("*.csv"))
+elif target.is_file():
+    paths = [str(target.resolve())]
+else:
+    raise SystemExit(f"Target not found: {target}")
+
+if not paths:
+    raise SystemExit("No CSV files found")
+
+payload = {
+    "jsonrpc": "2.0",
+    "id": "2",
+    "method": "tools/call",
+    "params": {
+        "name": "novelty.batch_csv",
+        "arguments": {
+            "payload": {
+                "csv_paths": paths,
+                "providers": ["wipo_patentscope"],
+                "query_type": query_type,
+                "result_column": "Result",
+                "provider_options": {
+                    "scaffold_mode": False,
+                    "include_markush_enumeration": False,
+                },
+                "resume": True,
+                "max_new_queries": max_new_queries,
+            }
+        },
+    },
+}
+print(json.dumps(payload))
+PY
+
+  curl -sS "$url" \
+    -H "Content-Type: application/json" \
+    -H "Accept: application/json, text/event-stream" \
+    -H "mcp-session-id: $sid" \
+    --data-binary @"$payload_file"
+  rm -f "$payload_file"
+}
+
 cmd="${1:-}"
 case "$cmd" in
   mcp)
@@ -88,6 +152,18 @@ case "$cmd" in
     query_json="$(json_escape "$query")"
     args_json="{\"payload\":{\"query\":$query_json,\"query_type\":\"$qtype\",\"providers\":[\"wipo_patentscope\"],\"options\":{\"scaffold_mode\":false,\"include_markush_enumeration\":false}}}"
     call_tool "$url" "$sid" "novelty.query" "$args_json"
+    ;;
+  batch)
+    csv_target="${2:-}"
+    qtype="${3:-smiles}"
+    max_new="${4:-20}"
+    url="${5:-$DEFAULT_URL}"
+    if [[ -z "$csv_target" ]]; then
+      usage
+      exit 1
+    fi
+    sid="$(init_session "$url")"
+    call_batch_tool "$url" "$sid" "$csv_target" "$qtype" "$max_new"
     ;;
   *)
     usage
