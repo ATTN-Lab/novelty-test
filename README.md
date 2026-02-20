@@ -24,12 +24,9 @@ Cross-provider novelty MCP server with a live WIPO provider and an extensible pr
 git clone git@github.com:ATTN-Lab/novelty-test.git
 cd novelty-test
 
-# Required for live WIPO calls:
-export WIPO_USERNAME='...'
-export WIPO_PASSWORD='...'
-
-# run_stdio.sh now auto-creates .venv and installs dependencies as needed
-./run_stdio.sh
+cp .env.example .env
+# edit .env with WIPO credentials
+scripts/novelty mcp
 ```
 
 Notes:
@@ -63,7 +60,8 @@ This starts Streamable HTTP MCP on `http://localhost:8000/mcp`.
 
 ## SSH Client Config Pattern
 Use your MCP client config to launch:
-- command: `/absolute/path/to/novelty-test/run_stdio.sh`
+- command: `/absolute/path/to/novelty-test/scripts/novelty`
+- args: `["mcp"]`
 
 This pattern is portable for Codex and Claude clients that support MCP stdio servers.
 Detailed setup and templates:

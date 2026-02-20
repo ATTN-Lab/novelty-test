@@ -6,6 +6,14 @@ VENV_DIR="${ROOT_DIR}/.venv"
 
 export PYTHONPATH="${ROOT_DIR}/src:${PYTHONPATH:-}"
 
+# Auto-load local environment config for portable client launches.
+if [[ -f "${ROOT_DIR}/.env" ]]; then
+  set -a
+  # shellcheck source=/dev/null
+  . "${ROOT_DIR}/.env"
+  set +a
+fi
+
 if [[ -n "${PYTHON_BIN:-}" ]]; then
   PYTHON="${PYTHON_BIN}"
 elif [[ -x "${VENV_DIR}/bin/python" ]]; then

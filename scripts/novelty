@@ -1,0 +1,96 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+ROOT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
+DEFAULT_URL="${MCP_URL:-http://127.0.0.1:${MCP_PORT:-8010}/mcp}"
+
+usage() {
+  cat <<USAGE
+Usage:
+  scripts/novelty mcp
+  scripts/novelty http [port]
+  scripts/novelty smoke [url]
+  scripts/novelty query <query_type> <query> [url]
+
+Examples:
+  scripts/novelty mcp
+  scripts/novelty http 8010
+  scripts/novelty smoke
+  scripts/novelty query compound_name ibuprofen
+USAGE
+}
+
+json_escape() {
+  python3 - <<'PY' "$1"
+import json, sys
+print(json.dumps(sys.argv[1]))
+PY
+}
+
+init_session() {
+  local url="$1"
+  local tmp
+  tmp="$(mktemp)"
+  curl -sS -i "$url" \
+    -H "Content-Type: application/json" \
+    -H "Accept: application/json, text/event-stream" \
+    -d '{"jsonrpc":"2.0","id":"1","method":"initialize","params":{"protocolVersion":"2025-03-26","capabilities":{},"clientInfo":{"name":"novelty-cli","version":"0.1"}}}' \
+    >"$tmp"
+
+  local sid
+  sid="$(awk -F': ' 'tolower($1)=="mcp-session-id" {gsub("\\r","",$2); print $2}' "$tmp" | tail -1)"
+  if [[ -z "$sid" ]]; then
+    echo "Failed to initialize MCP session" >&2
+    cat "$tmp" >&2
+    rm -f "$tmp"
+    exit 1
+  fi
+  rm -f "$tmp"
+  printf '%s\n' "$sid"
+}
+
+call_tool() {
+  local url="$1"
+  local sid="$2"
+  local tool_name="$3"
+  local args_json="$4"
+
+  curl -sS "$url" \
+    -H "Content-Type: application/json" \
+    -H "Accept: application/json, text/event-stream" \
+    -H "mcp-session-id: $sid" \
+    -d "{\"jsonrpc\":\"2.0\",\"id\":\"2\",\"method\":\"tools/call\",\"params\":{\"name\":\"$tool_name\",\"arguments\":$args_json}}"
+}
+
+cmd="${1:-}"
+case "$cmd" in
+  mcp)
+    exec "$ROOT_DIR/run_stdio.sh"
+    ;;
+  http)
+    export MCP_PORT="${2:-${MCP_PORT:-8010}}"
+    exec "$ROOT_DIR/run_http.sh"
+    ;;
+  smoke)
+    url="${2:-$DEFAULT_URL}"
+    sid="$(init_session "$url")"
+    call_tool "$url" "$sid" "novelty.providers.list" "{}"
+    ;;
+  query)
+    qtype="${2:-}"
+    query="${3:-}"
+    url="${4:-$DEFAULT_URL}"
+    if [[ -z "$qtype" || -z "$query" ]]; then
+      usage
+      exit 1
+    fi
+    sid="$(init_session "$url")"
+    query_json="$(json_escape "$query")"
+    args_json="{\"payload\":{\"query\":$query_json,\"query_type\":\"$qtype\",\"providers\":[\"wipo_patentscope\"],\"provider_options\":{\"wipo_patentscope\":{\"scaffold_mode\":false,\"include_markush_enumeration\":false}}}}"
+    call_tool "$url" "$sid" "novelty.query" "$args_json"
+    ;;
+  *)
+    usage
+    exit 1
+    ;;
+esac

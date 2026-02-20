@@ -12,35 +12,21 @@ git clone https://github.com/ATTN-Lab/novelty-test.git
 cd novelty-test
 ```
 
-## Option A: Stdio transport (recommended)
-Use this for Claude Desktop and Codex MCP integrations.
-
-Set credentials:
+## Minimal Workflow (Compressed)
+1. Configure secrets once:
 ```bash
-export WIPO_USERNAME='your_wipo_username'
-export WIPO_PASSWORD='your_wipo_password'
+cp .env.example .env
+# edit .env with WIPO_USERNAME / WIPO_PASSWORD
 ```
 
-If your default `python3` is older than 3.10, set interpreter explicitly:
+2. Start MCP (stdio for Codex/Claude):
 ```bash
-export PYTHON_BIN='/absolute/path/to/python3.11'
+scripts/novelty mcp
 ```
 
-Server command:
+3. Optional HTTP mode:
 ```bash
-/absolute/path/to/novelty-test/run_stdio.sh
-```
-
-## Option B: Streamable HTTP transport
-Start server:
-```bash
-cd /absolute/path/to/novelty-test
-MCP_PORT=8010 ./run_http.sh
-```
-
-Endpoint:
-```text
-http://localhost:8010/mcp
+scripts/novelty http 8010
 ```
 
 ## Client Config Templates
@@ -52,11 +38,10 @@ http://localhost:8010/mcp
   - `docs/client-config/http.url.json`
 
 ## Smoke Test
-After connecting client to this MCP server:
-1. Call `novelty.providers.list`
-2. Call `novelty.query` with:
-   - `query_type`: `compound_name`
-   - `query`: `ibuprofen`
-   - `providers`: `["wipo_patentscope"]`
+Without writing JSON manually:
+```bash
+scripts/novelty smoke
+scripts/novelty query compound_name ibuprofen
+```
 
 If these return successfully, the integration is ready for `novelty.batch_csv`.

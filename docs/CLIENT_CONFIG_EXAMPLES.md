@@ -4,7 +4,7 @@ See also: `docs/CLIENT_SETUP.md` for complete end-to-end setup.
 
 ## Generic stdio server command
 ```bash
-/absolute/path/to/novelty-test/run_stdio.sh
+/absolute/path/to/novelty-test/scripts/novelty mcp
 ```
 
 ## Codex-style MCP config (example)
@@ -12,11 +12,8 @@ See also: `docs/CLIENT_SETUP.md` for complete end-to-end setup.
 {
   "mcpServers": {
     "patent-novelty": {
-      "command": "/absolute/path/to/novelty-test/run_stdio.sh",
-      "env": {
-        "WIPO_USERNAME": "${WIPO_USERNAME}",
-        "WIPO_PASSWORD": "${WIPO_PASSWORD}"
-      }
+      "command": "/absolute/path/to/novelty-test/scripts/novelty",
+      "args": ["mcp"]
     }
   }
 }
@@ -27,12 +24,8 @@ See also: `docs/CLIENT_SETUP.md` for complete end-to-end setup.
 {
   "mcpServers": {
     "patent-novelty": {
-      "command": "/absolute/path/to/novelty-test/run_stdio.sh",
-      "args": [],
-      "env": {
-        "WIPO_USERNAME": "${WIPO_USERNAME}",
-        "WIPO_PASSWORD": "${WIPO_PASSWORD}"
-      }
+      "command": "/absolute/path/to/novelty-test/scripts/novelty",
+      "args": ["mcp"]
     }
   }
 }
@@ -43,7 +36,7 @@ Adjust to your actual client config format if field names differ.
 ## Streamable HTTP endpoint (if client supports URL-based MCP)
 Start server with:
 ```bash
-./run_http.sh
+scripts/novelty http 8010
 ```
 
 Endpoint:
